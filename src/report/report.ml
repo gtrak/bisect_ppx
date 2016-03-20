@@ -88,6 +88,10 @@ let main () =
         generic_output file (ReportXMLEmma.make ())
     | ReportArgs.Csv_output file ->
         generic_output file (ReportCSV.make !ReportArgs.separator)
+    | ReportArgs.Csv_lines_output out_file ->
+      ReportLines.output ~verbose ~out_file
+        ~tab_size:!ReportArgs.tab_size ~title:!ReportArgs.title
+        ~resolver:search_in_path ~data
     | ReportArgs.Text_output file ->
         generic_output file (ReportText.make !ReportArgs.summary_only)
     | ReportArgs.Dump_output file ->

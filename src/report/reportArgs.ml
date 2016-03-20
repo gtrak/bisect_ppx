@@ -21,6 +21,7 @@ type output_kind =
   | Xml_output of string
   | Xml_emma_output of string
   | Csv_output of string
+  | Csv_lines_output of string
   | Text_output of string
   | Dump_output of string
   | Bisect_output of string
@@ -112,6 +113,9 @@ let options = Arg.align [
   ("-xml-emma",
    Arg.String (fun s -> add_output (Xml_emma_output s)),
    "<file>  Output EMMA XML to the given file") ;
+  ("-csv-lines",
+   Arg.String (fun s -> add_output (Csv_lines_output s)),
+   "<file>  Output Code Coverage line information to CSV") ;
   ("-ignore-missing-files",
    Arg.Set ignore_missing_files,
    " Do not fail if an .ml file can't be found") ;

@@ -24,6 +24,7 @@ type output_kind =
   | Xml_output of string
   | Xml_emma_output of string
   | Csv_output of string
+  | Csv_lines_output of string
   | Text_output of string
   | Dump_output of string
   | Bisect_output of string
