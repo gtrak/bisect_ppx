@@ -74,6 +74,9 @@ let main () =
           search_in_path data points
     | ReportArgs.Csv_output file ->
         generic_output file (ReportCSV.make !ReportArgs.separator)
+    | ReportArgs.Csv_line_coverage_output out_file ->
+      ReportLineCoverage.output ~verbose ~out_file
+        ~tab_size:!ReportArgs.tab_size ~resolver:search_in_path ~data
     | ReportArgs.Text_output file ->
         generic_output file (ReportText.make !ReportArgs.summary_only)
     | ReportArgs.Dump_output file ->

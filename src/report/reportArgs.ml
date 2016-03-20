@@ -19,6 +19,7 @@
 type output_kind =
   | Html_output of string
   | Csv_output of string
+  | Csv_line_coverage_output of string
   | Text_output of string
   | Dump_output of string
 
@@ -82,6 +83,9 @@ let options = Arg.align [
   ("-dump",
    Arg.String (fun s -> add_output (Dump_output s)),
    "<file>  Output bare dump to the given file") ;
+  ("-csv-line-coverage",
+   Arg.String (fun s -> add_output (Csv_line_coverage_output s)),
+   "<file>  Output Code Coverage line information to a CSV, given by file.") ;
   ("-ignore-missing-files",
    Arg.Set ignore_missing_files,
    " Do not fail if an .ml file can't be found") ;

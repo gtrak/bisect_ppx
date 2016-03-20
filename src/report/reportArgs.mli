@@ -22,6 +22,7 @@
 type output_kind =
   | Html_output of string
   | Csv_output of string
+  | Csv_line_coverage_output of string
   | Text_output of string
   | Dump_output of string
 (** The type of output kinds. *)
