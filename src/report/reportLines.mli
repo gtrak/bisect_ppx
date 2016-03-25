@@ -4,7 +4,6 @@ val output
   : verbose:(string -> unit)
   -> out_file:string
   -> tab_size:int
-  -> title:string
   -> resolver:(string -> string option)
   -> data:(string, int array) Hashtbl.t
   -> unit

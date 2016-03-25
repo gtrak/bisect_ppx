@@ -1,16 +1,13 @@
 module R = ReportUtils
 
 let escape_line tab_size line offset points =
-  let buff = Buffer.create (String.length line) in
   let ofs = ref offset in
   let pts = ref points in
-
   let marker_if_any content =
     match !pts with
     | (o, n) :: tl when o = !ofs ->
-        Printf.bprintf buff "<span data-count=\"%i\">%s</span>" n content;
         pts := tl
-    | _ -> Buffer.add_string buff content in
+    | _ -> () in
   String.iter
     (fun ch ->
       let s =
@@ -23,8 +20,7 @@ let escape_line tab_size line offset points =
       in
       marker_if_any s;
       incr ofs)
-    line;
-  Buffer.contents buff
+    line
 
 let visited_or_unvisited = function
   | true, false -> "Visited"
@@ -32,7 +28,7 @@ let visited_or_unvisited = function
   | true, true -> "Some-Visted"
   | false, false -> "Unknown"
 
-let output_lines verbose tab_size title in_file out_channel resolver visited =
+let output_lines verbose tab_size in_file out_channel resolver visited =
   verbose (Printf.sprintf "Processing file '%s'..." in_file);
   match resolver in_file with
   | None -> verbose "... file not found"
@@ -65,8 +61,7 @@ let output_lines verbose tab_size title in_file out_channel resolver visited =
              let line' = escape_line tab_size line start_ofs before in
              let visited, unvisited =
                List.fold_left
-                 (fun (v, u) (_, nb) ->
-                    ((v || (nb > 0)), (u || (nb = 0))))
+                 (fun (v, u) (_, nb) -> ((v || (nb > 0)), (u || (nb = 0))))
                  (false, false)
                  before
              in
@@ -80,7 +75,7 @@ let output_lines verbose tab_size title in_file out_channel resolver visited =
        |> List.map (fun (_, _, visited, unvisited) ->
            Printf.sprintf "%s" (visited_or_unvisited (visited, unvisited)))
        |> String.concat ","
-       |> Printf.sprintf "%s,%s\n" basename
+       |> Printf.sprintf "%s,\"%s\"\n" basename
        |> output_string out_channel
        |> ignore
      with e ->
@@ -88,11 +83,13 @@ let output_lines verbose tab_size title in_file out_channel resolver visited =
        raise e);
     close_in_noerr in_channel
 
-let output ~verbose ~out_file ~tab_size ~title ~resolver ~data =
+let output ~verbose ~out_file ~tab_size ~resolver ~data =
   let out_channel = open_out out_file in
   (try
+     let header = "module name, line information\n" in
+     output_string out_channel header;
      Hashtbl.iter (fun in_file visited ->
-         output_lines verbose tab_size title in_file out_channel resolver visited)
+         output_lines verbose tab_size in_file out_channel resolver visited)
        data
    with e ->
      close_out_noerr out_channel;
