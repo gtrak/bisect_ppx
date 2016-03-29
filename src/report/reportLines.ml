@@ -47,7 +47,6 @@ let output_lines verbose tab_size in_file out_channel resolver visited =
                         ReportStat.update stats p.Common.kind (nb > 0);
                         (p.Common.offset, nb))
                      cmp_content) in
-    let basename = Filename.basename in_file in
     let in_channel = open_in resolved_in_file in
     (try
        let lines, line_count =
@@ -75,7 +74,7 @@ let output_lines verbose tab_size in_file out_channel resolver visited =
        |> List.map (fun (_, _, visited, unvisited) ->
            Printf.sprintf "%s" (visited_or_unvisited (visited, unvisited)))
        |> String.concat ","
-       |> Printf.sprintf "%s,\"%s\"\n" basename
+       |> Printf.sprintf "%s,\"%s\"\n" resolved_in_file
        |> output_string out_channel
        |> ignore
      with e ->
@@ -86,7 +85,7 @@ let output_lines verbose tab_size in_file out_channel resolver visited =
 let output ~verbose ~out_file ~tab_size ~resolver ~data =
   let out_channel = open_out out_file in
   (try
-     let header = "module name, line information\n" in
+     let header = "module name,line information\n" in
      output_string out_channel header;
      Hashtbl.iter (fun in_file visited ->
          output_lines verbose tab_size in_file out_channel resolver visited)
