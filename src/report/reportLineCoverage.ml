@@ -28,12 +28,13 @@ let visited_or_unvisited = function
   | true, true -> "Some-Visted"
   | false, false -> "Unknown"
 
-let output_lines verbose tab_size in_file out_channel resolver visited =
+let output_lines verbose tab_size in_file out_channel resolver visited points =
   verbose (Printf.sprintf "Processing file '%s'..." in_file);
   match resolver in_file with
   | None -> verbose "... file not found"
   | Some resolved_in_file ->
-    let cmp_content = Bisect.Common.read_points' resolved_in_file in
+    let cmp_content = Hashtbl.find points in_file
+                      |> Bisect.Common.read_points' in
     verbose (Printf.sprintf "... file has %d points" (List.length cmp_content));
     let len = Array.length visited in
     let stats = ReportStat.make () in
@@ -82,13 +83,14 @@ let output_lines verbose tab_size in_file out_channel resolver visited =
        raise e);
     close_in_noerr in_channel
 
-let output ~verbose ~out_file ~tab_size ~resolver ~data =
+let output ~verbose ~out_file ~tab_size ~resolver ~data ~points =
   let out_channel = open_out out_file in
   (try
      let header = "module name,line information\n" in
      output_string out_channel header;
      Hashtbl.iter (fun in_file visited ->
-         output_lines verbose tab_size in_file out_channel resolver visited)
+         output_lines verbose tab_size in_file out_channel resolver visited
+           points)
        data
    with e ->
      close_out_noerr out_channel;
